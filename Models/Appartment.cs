@@ -15,5 +15,7 @@
         public double TotalSpace { get; set; }
         public int HouseId { get; set; }
 
+        // Add configure one-to-many references to your models
+        // public List<Resident> Residents { get; set; }
     }
 }

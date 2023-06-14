@@ -7,6 +7,8 @@
         public string Surname { get; set; }
 
         public string Person_code { get; set; }
+
+        /// <see cref="DateTimeOffset"/> - it includes information about the time zone offset
         public DateTime Birth_time { get; set; }
 
         public int Telephone { get; set; }

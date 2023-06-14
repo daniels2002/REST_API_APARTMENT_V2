@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿// Install CodeMaid extension and enable automatic code cleanup on save
+
+// Ctrl + R + G clears unnecessary usings
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using REST_API_APARTMENT.Models;
@@ -24,10 +22,11 @@ namespace REST_API_APARTMENT.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Appartment>>> GetAppartments()
         {
-          if (_context.Appartments == null)
-          {
-              return NotFound();
-          }
+            // DbSet can't be null
+            if (_context.Appartments == null)
+            {
+                return NotFound();
+            }
             return await _context.Appartments.ToListAsync();
         }
 
@@ -35,10 +34,11 @@ namespace REST_API_APARTMENT.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Appartment>> GetAppartment(int id)
         {
-          if (_context.Appartments == null)
-          {
-              return NotFound();
-          }
+            // DbSet can't be null
+            if (_context.Appartments == null)
+            {
+                return NotFound();
+            }
             var appartment = await _context.Appartments.FindAsync(id);
 
             if (appartment == null)
@@ -54,12 +54,19 @@ namespace REST_API_APARTMENT.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAppartment(int id, Appartment appartment)
         {
+            // Why you don't use Apartment.Id?
             if (id != appartment.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(appartment).State = EntityState.Modified;
+            //_context.Entry(appartment).State = EntityState.Modified;
+            _context.Appartments.Update(appartment);
+
+            // You can create BaseEntity abstract class with Id and RowVersion fields.
+            // This way you will get rid of the need to add try-catch everywhere and
+            // create additional load on the database
+            // https://learn.microsoft.com/en-us/aspnet/core/data/ef-mvc/concurrency?view=aspnetcore-7.0#add-a-tracking-property
 
             try
             {
@@ -85,14 +92,15 @@ namespace REST_API_APARTMENT.Controllers
         [HttpPost]
         public async Task<ActionResult<Appartment>> PostAppartment(Appartment appartment)
         {
-          if (_context.Appartments == null)
-          {
-              return Problem("Entity set 'HouseContext.Appartments'  is null.");
-          }
+            if (_context.Appartments == null)
+            {
+                return Problem("Entity set 'HouseContext.Appartments'  is null.");
+            }
             _context.Appartments.Add(appartment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAppartment", new { id = appartment.Id }, appartment);
+            //return CreatedAtAction("GetAppartment", new { id = appartment.Id }, appartment);
+            return appartment;
         }
 
         // DELETE: api/Appartments/5
