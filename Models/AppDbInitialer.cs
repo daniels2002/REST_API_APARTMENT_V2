@@ -5,11 +5,13 @@ namespace REST_API_APARTMENT.Models
     public class AppDbInitialer
     {
         Random r  = new Random();
-        public static void Seed(IApplicationBuilder applicationBuilder)//static class or own server 
+        //static class or own server 
+        public static void Seed(IApplicationBuilder applicationBuilder)
         {
             using (var serviceScope=applicationBuilder.ApplicationServices.CreateScope())
             {
-                var context = serviceScope.ServiceProvider.GetService<HouseContext>();//context reference
+                //context reference
+                var context = serviceScope.ServiceProvider.GetService<HouseContext>();
                 
 
                 if (!context.Houses.Any())

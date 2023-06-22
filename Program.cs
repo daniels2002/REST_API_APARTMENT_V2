@@ -30,7 +30,6 @@ namespace REST_API_APARTMENT
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
