@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using REST_API_APARTMENT.DTO.Appartment_DTO;
 using REST_API_APARTMENT.Models;
+using REST_API_APARTMENT.Validation;
 
 namespace REST_API_APARTMENT.Controllers
 {
@@ -14,31 +12,39 @@ namespace REST_API_APARTMENT.Controllers
     public class AppartmentsController : ControllerBase
     {
         private readonly HouseContext _context;
+        private readonly IMapper _mapper;
+        private readonly AppartmentValidation validator;
 
         public AppartmentsController(HouseContext context)
         {
+            // Instance injection
+
             _context = context;
+            _mapper = _mapper = MapperConfig.InitializeAutomapper();
+            this.validator = new AppartmentValidation();
         }
 
         // GET: api/Appartments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Appartment>>> GetAppartments()
+        public async Task<ActionResult<List<AppartmentDTO>>> GetAppartments()
         {
-          if (_context.Appartments == null)
-          {
-              return NotFound();
-          }
-            return await _context.Appartments.ToListAsync();
+            if (_context.Appartments == null)
+            {
+                return NotFound();
+            }
+
+            var db = await _context.Appartments.ToListAsync();
+
+            // Destination  // Source
+            var response = _mapper.Map<List<AppartmentDTO>>(db);
+
+            return response;
         }
 
         // GET: api/Appartments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Appartment>> GetAppartment(int id)
         {
-          if (_context.Appartments == null)
-          {
-              return NotFound();
-          }
             var appartment = await _context.Appartments.FindAsync(id);
 
             if (appartment == null)
@@ -59,25 +65,19 @@ namespace REST_API_APARTMENT.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(appartment).State = EntityState.Modified;
+            var appartmentDTO = _mapper.Map<AppartmentDTO>(appartment);
+            var validationResult = validator.Validate(appartmentDTO);
 
-            try
+            if (!validationResult.IsValid)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AppartmentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                var errorMessages = validationResult.Errors.Select(error => error.ErrorMessage);
+                return BadRequest(string.Join(", ", errorMessages));
             }
 
-            return NoContent();
+            _context.Appartments.Update(appartment);
+            await _context.SaveChangesAsync();
+
+            return Ok($"Appartment Nr {appartment.Id}  updated :)");
         }
 
         // POST: api/Appartments
@@ -85,39 +85,36 @@ namespace REST_API_APARTMENT.Controllers
         [HttpPost]
         public async Task<ActionResult<Appartment>> PostAppartment(Appartment appartment)
         {
-          if (_context.Appartments == null)
-          {
-              return Problem("Entity set 'HouseContext.Appartments'  is null.");
-          }
+            var appartmentDTO = _mapper.Map<AppartmentDTO>(appartment);
+
+            var validationResult = validator.Validate(appartmentDTO);
+            if (!validationResult.IsValid)
+            {
+                // Return validation errors
+                var errorMessages = validationResult.Errors.Select(error => error.ErrorMessage);
+                return BadRequest(string.Join(", ", errorMessages));
+            }
+
             _context.Appartments.Add(appartment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAppartment", new { id = appartment.Id }, appartment);
+            return Ok("Appartment created successfully :) ");
         }
 
         // DELETE: api/Appartments/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppartment(int id)
         {
-            if (_context.Appartments == null)
-            {
-                return NotFound();
-            }
             var appartment = await _context.Appartments.FindAsync(id);
             if (appartment == null)
             {
                 return NotFound();
             }
 
-            _context.Appartments.Remove(appartment);
+            //_context.Appartments.Remove(appartment);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool AppartmentExists(int id)
-        {
-            return (_context.Appartments?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "78fJ6t2jQZWXpvGLwyFcaNQ7jaMZeq3P89AmS3LiWbQ=",
+  "Source": "REST_API_APARTMENT",
+  "BasePath": "_content/REST_API_APARTMENT",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

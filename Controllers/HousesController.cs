@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using REST_API_APARTMENT.DTO.House_DTO;
 using REST_API_APARTMENT.Models;
+using REST_API_APARTMENT.Validation;
 
 namespace REST_API_APARTMENT.Controllers
 {
@@ -14,38 +12,43 @@ namespace REST_API_APARTMENT.Controllers
     public class HousesController : ControllerBase
     {
         private readonly HouseContext _context;
+        private readonly IMapper _mapper;
+        private readonly HouseValidation validator;
 
         public HousesController(HouseContext context)
         {
             _context = context;
+            _mapper = _mapper = MapperConfig.InitializeAutomapper();
+            this.validator = new HouseValidation();
         }
 
         // GET: api/Houses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<House>>> GetHouses()
+        public async Task<ActionResult<List<HouseDTO>>> GetHouses()
         {
-          if (_context.Houses == null)
-          {
-              return NotFound();
-          }
-            return await _context.Houses.ToListAsync();
+            if (_context.Houses == null)
+            {
+                return NotFound();
+            }
+            var db = await _context.Houses.ToListAsync();
+            var response = _mapper.Map<List<HouseDTO>>(db);
+            return response;
         }
 
         // GET: api/Houses/5
         [HttpGet("{id}")]
         public async Task<ActionResult<House>> GetHouse(int id)
         {
-          if (_context.Houses == null)
-          {
-              return NotFound();
-          }
+            if (_context.Houses == null)
+            {
+                return NotFound();
+            }
             var house = await _context.Houses.FindAsync(id);
 
             if (house == null)
             {
                 return NotFound();
             }
-
             return house;
         }
 
@@ -57,6 +60,15 @@ namespace REST_API_APARTMENT.Controllers
             if (id != house.Id)
             {
                 return BadRequest();
+            }
+
+            var houseDTO = _mapper.Map<HouseDTO>(house);
+            var validationResult = validator.Validate(houseDTO);
+
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = validationResult.Errors.Select(error => error.ErrorMessage);
+                return BadRequest(string.Join(", ", errorMessages));
             }
 
             _context.Entry(house).State = EntityState.Modified;
@@ -77,7 +89,7 @@ namespace REST_API_APARTMENT.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok($" House Nr {house.Id}  updated :)");
         }
 
         // POST: api/Houses
@@ -85,14 +97,17 @@ namespace REST_API_APARTMENT.Controllers
         [HttpPost]
         public async Task<ActionResult<House>> PostHouse(House house)
         {
-          if (_context.Houses == null)
-          {
-              return Problem("Entity set 'HouseContext.Houses'  is null.");
-          }
+            var houseDTO = _mapper.Map<HouseDTO>(house);
+            var validationresult = validator.Validate(houseDTO);
+            if (!validationresult.IsValid)
+            {
+                // Return validation errors
+                var errorMessages = validationresult.Errors.Select(error => error.ErrorMessage);
+                return BadRequest(string.Join(", ", errorMessages));
+            }
             _context.Houses.Add(house);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetHouse", new { id = house.Id }, house);
+            return Ok("House created successfully");
         }
 
         // DELETE: api/Houses/5

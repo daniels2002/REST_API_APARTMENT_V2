@@ -1,32 +1,38 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\danie\\source\\repos\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT.csproj": {}
+    "C:\\Users\\DanielsRafaels\\Downloads\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT.csproj": {}
   },
   "projects": {
-    "C:\\Users\\danie\\source\\repos\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT.csproj": {
+    "C:\\Users\\DanielsRafaels\\Downloads\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\danie\\source\\repos\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT.csproj",
+        "projectUniqueName": "C:\\Users\\DanielsRafaels\\Downloads\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT.csproj",
         "projectName": "REST_API_APARTMENT",
-        "projectPath": "C:\\Users\\danie\\source\\repos\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT.csproj",
-        "packagesPath": "C:\\Users\\danie\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\danie\\source\\repos\\REST_API_APARTMENT\\REST_API_APARTMENT\\obj\\",
+        "projectPath": "C:\\Users\\DanielsRafaels\\Downloads\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT.csproj",
+        "packagesPath": "C:\\Users\\DanielsRafaels\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DanielsRafaels\\Downloads\\REST_API_APARTMENT\\REST_API_APARTMENT\\REST_API_APARTMENT\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\danie\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\DanielsRafaels\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net7.0-windows"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net7.0-windows7.0": {
+            "targetAlias": "net7.0-windows",
             "projectReferences": {}
           }
         },
@@ -37,9 +43,21 @@
         }
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net7.0-windows7.0": {
+          "targetAlias": "net7.0-windows",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[11.5.2, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[7.0.2, )"
@@ -58,6 +76,10 @@
               "target": "Package",
               "version": "[7.0.4, )"
             },
+            "Microsoft.OData.ModelBuilder": {
+              "target": "Package",
+              "version": "[1.0.9, )"
+            },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[7.0.5, )"
@@ -65,6 +87,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "windowsazure.mediaservices": {
+              "target": "Package",
+              "version": "[4.2.0, )"
             }
           },
           "imports": [
@@ -86,7 +112,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     }
