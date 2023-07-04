@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using REST_API_APARTMENT.DTO.Resident_DTO;
 using REST_API_APARTMENT.Models;
+using REST_API_APARTMENT.Validation;
 
 namespace REST_API_APARTMENT.Controllers
 {
@@ -14,31 +13,37 @@ namespace REST_API_APARTMENT.Controllers
     public class ResidentsController : ControllerBase
     {
         private readonly HouseContext _context;
+        private readonly IMapper _mapper;
+        private readonly ResidentValidation validator;
 
         public ResidentsController(HouseContext context)
         {
             _context = context;
+            _mapper = _mapper = MapperConfig.InitializeAutomapper();
+            this.validator = new ResidentValidation();
         }
 
         // GET: api/Residents
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Resident>>> GetResidents()
+        public async Task<ActionResult<List<Resident>>> GetResidents()
         {
-          if (_context.Residents == null)
-          {
-              return NotFound();
-          }
-            return await _context.Residents.Include(x=>x.Appartment).ToListAsync();
+            if (_context.Residents == null)
+            {
+                return NotFound();
+            }
+            var db = await _context.Residents.ToListAsync();
+            var response = _mapper.Map<List<Resident>>(db);
+            return response;
         }
 
         // GET: api/Residents/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Resident>> GetResident(int id)
         {
-          if (_context.Residents == null)
-          {
-              return NotFound();
-          }
+            if (_context.Residents == null)
+            {
+                return NotFound();
+            }
             var resident = await _context.Residents.FindAsync(id);
 
             if (resident == null)
@@ -59,6 +64,15 @@ namespace REST_API_APARTMENT.Controllers
                 return BadRequest();
             }
 
+            var residentDTO = _mapper.Map<ResidentDTO>(resident);
+            var validationResult = validator.Validate(residentDTO);
+
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = validationResult.Errors.Select(error => error.ErrorMessage);
+                return BadRequest(string.Join(", ", errorMessages));
+            }
+
             _context.Entry(resident).State = EntityState.Modified;
 
             try
@@ -77,7 +91,7 @@ namespace REST_API_APARTMENT.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok($"Resident Nr {resident.Id} updated :)");
         }
 
         // POST: api/Residents
@@ -85,14 +99,17 @@ namespace REST_API_APARTMENT.Controllers
         [HttpPost]
         public async Task<ActionResult<Resident>> PostResident(Resident resident)
         {
-          if (_context.Residents == null)
-          {
-              return Problem("Entity set 'HouseContext.Residents'  is null.");
-          }
+            var residentDTO = _mapper.Map<ResidentDTO>(resident);
+            var validationResult = validator.Validate(residentDTO);
+            if (!validationResult.IsValid)
+            {
+                // Return validation errors
+                var errorMessages = validationResult.Errors.Select(error => error.ErrorMessage);
+                return BadRequest(string.Join(", ", errorMessages));
+            }
             _context.Residents.Add(resident);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetResident", new { id = resident.Id }, resident);
+            return Ok("Resident created successfully :) ");
         }
 
         // DELETE: api/Residents/5

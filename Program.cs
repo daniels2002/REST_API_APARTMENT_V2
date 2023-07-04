@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using REST_API_APARTMENT.Models;
+using REST_API_APARTMENT.Validation;
 
 namespace REST_API_APARTMENT
 {
@@ -10,33 +10,42 @@ namespace REST_API_APARTMENT
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //Adding DBContext Class
+            // ------------------------------- S  E  R  V  I  C  E  S  ----------------------------------------//
 
-           
+            // Adding DBContext Class
             builder.Services.AddDbContext<HouseContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("Settings")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Settings")));
 
-            // Add services to the container.
+            //  Adding FluentValidation
+            builder.Services.AddTransient<AppartmentValidation>();
+            builder.Services.AddTransient<HouseValidation>();
+            builder.Services.AddTransient<ResidentValidation>();
+
             builder.Services.AddControllers();
-          
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //  Adding AutoMapper
+            builder.Services.AddAutoMapper(typeof(Program));
+
+            // -------------------------------------------------------------------------------------------------//
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
-            AppDbInitialer.Seed(app);
+
+            // Adding the seed
+            AppDbInitializer.Seed(app);
+
             app.Run();
         }
     }

@@ -65,18 +65,15 @@ namespace REST_API_APARTMENT.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Postcode")
                         .HasColumnType("int");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -84,7 +81,7 @@ namespace REST_API_APARTMENT.Migrations
                     b.ToTable("Houses", (string)null);
                 });
 
-            modelBuilder.Entity("REST_API_APARTMENT.Models.Resident", b =>
+            modelBuilder.Entity("REST_API_APARTMENT.Resident", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -95,23 +92,19 @@ namespace REST_API_APARTMENT.Migrations
                     b.Property<int>("AppartmentId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Birth_time")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("Birth_time")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Person_code")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Telephone")
@@ -119,20 +112,7 @@ namespace REST_API_APARTMENT.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppartmentId");
-
                     b.ToTable("Residents", (string)null);
-                });
-
-            modelBuilder.Entity("REST_API_APARTMENT.Models.Resident", b =>
-                {
-                    b.HasOne("REST_API_APARTMENT.Models.Appartment", "Appartment")
-                        .WithMany()
-                        .HasForeignKey("AppartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Appartment");
                 });
 #pragma warning restore 612, 618
         }
